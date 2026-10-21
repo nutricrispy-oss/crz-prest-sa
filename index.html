@@ -44,7 +44,7 @@ h3{margin:4px 0 10px;font-size:16px}
 .tabs button span{display:block;font-size:20px}.tabs button.on{color:var(--pr);font-weight:700}
 #toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#0f1f1d;color:#fff;padding:10px 16px;border-radius:12px;opacity:0;transition:.25s;pointer-events:none;z-index:9;max-width:90%;text-align:center}
 #toast.on{opacity:1}
-.hid{display:none}.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mt{margin-top:10px}
+.hid{display:none}.kg{display:grid;grid-template-columns:1fr 1fr;gap:12px}.kg small{color:var(--mu);display:block}.kg b{font-size:17px}.x{border:0;background:none;color:var(--er);font-size:18px;padding:4px 8px}.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:20;display:flex;align-items:flex-end;justify-content:center}.sheet{background:var(--card);width:100%;max-width:640px;border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));max-height:90vh;overflow:auto}.sheet label{display:block;margin-bottom:10px;color:var(--mu);font-size:13px}.sheet label input,.sheet label select{margin-top:4px;color:var(--tx)}.sheet .chk{display:flex;gap:8px;align-items:center;color:var(--tx);font-size:15px}.sheet .chk input{width:auto;margin:0}.sm{padding:5px 9px;font-size:12px}.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mt{margin-top:10px}
 </style>
 </head>
 <body>
@@ -53,7 +53,7 @@ h3{margin:4px 0 10px;font-size:16px}
 <nav class="tabs" id="tabs"></nav>
 <div id="toast"></div>
 <script>
-const SEED={"c":[{"n":"Corredor 100","d":33733500,"q":42000,"a":true,"p":31843500,"g":["2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-26","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10"]},{"n":"Corredor 29","d":23569000,"q":28000,"a":true,"p":22309000,"g":["2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 106","d":21600000,"q":28000,"a":true,"p":20340000,"g":["2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 24","d":42030000,"q":42000,"a":true,"p":40140000,"g":["2026-10-08","2026-10-09","2026-10-10","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 47","d":55710000,"q":42000,"a":true,"p":53820000,"g":["2026-10-09","2026-10-10","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 27","d":12285000,"q":14000,"a":true,"p":11655000,"g":["2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 22","d":22500000,"q":28000,"a":true,"p":21240000,"g":["2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 17","d":38780000,"q":56000,"a":true,"p":36260000,"g":["2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor --","d":10845000,"q":0,"a":false,"p":10845000,"g":[]},{"n":"Corredor 24,3","d":14400000,"q":14000,"a":true,"p":13770000,"g":["2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 81","d":34020000,"q":42000,"a":true,"p":32130000,"g":["2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 24,2","d":13992000,"q":28000,"a":true,"p":12732000,"g":["2026-10-21"]},{"n":"Corredor 39","d":20790000,"q":28000,"a":true,"p":19530000,"g":["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 05,2","d":6300000,"q":28000,"a":true,"p":5040000,"g":["2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-05","2026-09-07","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-12","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-19","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-26","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]}],"np":[[0,"2026-10-21",42000]]};
+const SEED={"c":[{"n":"Corredor 100","d":33733500,"q":42000,"a":true,"p":31843500,"g":["2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-26","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10"]},{"n":"Corredor 29","d":23569000,"q":28000,"a":true,"p":22309000,"g":["2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 106","d":21600000,"q":28000,"a":true,"p":20340000,"g":["2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 24","d":42030000,"q":42000,"a":true,"p":40140000,"g":["2026-10-08","2026-10-09","2026-10-10","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 47","d":55710000,"q":42000,"a":true,"p":53820000,"g":["2026-10-09","2026-10-10","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 27","d":12285000,"q":14000,"a":true,"p":11655000,"g":["2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 22","d":22500000,"q":28000,"a":true,"p":21240000,"g":["2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 17","d":38780000,"q":56000,"a":true,"p":36260000,"g":["2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor --","d":10845000,"q":0,"a":false,"p":10845000,"g":[]},{"n":"Corredor 24,3","d":14400000,"q":14000,"a":true,"p":13770000,"g":["2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 81","d":34020000,"q":42000,"a":true,"p":32130000,"g":["2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 24,2","d":13992000,"q":28000,"a":true,"p":12732000,"g":["2026-10-21"]},{"n":"Corredor 39","d":20790000,"q":28000,"a":true,"p":19530000,"g":["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 05,2","d":6300000,"q":28000,"a":true,"p":5040000,"g":["2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-05","2026-09-07","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-12","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-19","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-26","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]}],"np":[[0,"2026-10-21",42000]],"h":{"2026-10-01":322000,"2026-10-02":266000,"2026-10-03":266000,"2026-10-05":266000,"2026-10-06":266000,"2026-10-07":266000,"2026-10-08":224000,"2026-10-09":182000,"2026-10-10":182000,"2026-10-12":182000,"2026-10-13":126000,"2026-10-14":126000,"2026-10-15":70000,"2026-10-16":56000,"2026-10-17":56000,"2026-10-19":28000,"2026-10-20":28000},"r":[[7,1328000,"2026-10-01"],[3,408000,"2026-10-07"],[4,408000,"2026-10-08"],[2,1000000,"2026-10-10"],[6,692000,"2026-10-12"],[9,290000,"2026-10-14"],[10,954000,"2026-10-14"],[5,430000,"2026-10-15"],[1,916000,"2026-10-17"],[11,384000,"2026-10-20"]]};
 const KEY='crz_sanant_v1';
 const $=s=>document.querySelector(s);
 const Gs=n=>'Gs. '+Math.round(n).toLocaleString('de-DE');
@@ -71,17 +71,17 @@ function seed(){
   const corr=SEED.c.map((c,i)=>({id:'c'+i,nombre:c.n,deuda:c.d,cuota:c.q,activo:c.a,previo:c.p}));
   const pagos=[];
   SEED.c.forEach((c,i)=>c.g.forEach(g=>{const f=Array.isArray(g)?g[0]:g,m=Array.isArray(g)?g[1]:c.q;pagos.push({id:uid(),c:'c'+i,f,m})}));
-  return {corr,pagos,nopago:SEED.np.map(x=>({c:'c'+x[0],f:x[1],m:x[2]}))};
+  return {corr,pagos,nopago:SEED.np.map(x=>({c:'c'+x[0],f:x[1],m:x[2]})),hist:{...SEED.h},renov:SEED.r.map(x=>({id:uid(),c:'c'+x[0],m:x[1],f:x[2]})),retiros:[],gastos:[]};
 }
-function load(){try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}if(!S||!S.corr){S=seed();save()}}
+function load(){try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}if(!S||!S.corr){S=seed();save()}else{const d=seed();let ch=0;for(const k of['hist','renov','retiros','gastos'])if(!S[k]){S[k]=d[k];ch=1}if(ch)save()}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('No se pudo guardar')}}
 function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2200)}
 
-const pagado=c=>c.previo+S.pagos.filter(p=>p.c===c.id).reduce((a,p)=>a+p.m,0);
+const pagado=c=>c.previo+S.pagos.filter(p=>p.c===c.id&&p.f>=(c.desde||'')).reduce((a,p)=>a+p.m,0);
 const saldo=c=>c.deuda-pagado(c);
 const pagosDe=(c,f)=>S.pagos.filter(p=>p.c===c.id&&p.f===f);
 const npDe=(c,f)=>S.nopago.find(p=>p.c===c.id&&p.f===f);
-const totalDia=f=>S.pagos.filter(p=>p.f===f).reduce((a,p)=>a+p.m,0);
+const totalDia=f=>S.pagos.filter(p=>p.f===f).reduce((a,p)=>a+p.m,0)+(S.hist[f]||0);
 const activos=()=>S.corr.filter(c=>c.activo&&c.cuota>0&&saldo(c)>0);
 
 function generar(f){
@@ -132,11 +132,12 @@ function vHoy(){
 }
 function vCorr(){
   const tot=S.corr.reduce((a,c)=>a+saldo(c),0);
-  let h=`<div class="card"><div class="kpi"><div><small>Deuda pendiente total</small><b>${Gs(tot)}</b></div><div><small>Activos</small><b>${activos().length}</b></div></div></div>`;
+  let h=`<div class="card"><div class="kpi"><div><small>Deuda pendiente total</small><b>${Gs(tot)}</b></div><div><small>Activos</small><b>${activos().length}</b></div></div><button class="big mt" onclick="nuevoCorr()">＋ Nuevo corredor</button></div>`;
   S.corr.forEach(c=>{const s=saldo(c),pc=Math.min(100,pagado(c)/c.deuda*100),q=c.cuota?Math.ceil(s/c.cuota):0;
     h+=`<div class="card"><div class="row" style="border:0;padding:0"><div class="n"><b>${c.nombre}</b><small>Cuota ${c.cuota?Gs(c.cuota):'—'}</small></div>
     <span class="chip ${s<=0?'c-ok':'c-pe'}">${s<=0?'Saldado':q+' cuotas'}</span></div>
-    <div class="bar"><i style="width:${pc}%"></i></div><div class="sp"><span>Pagado ${Gs(pagado(c))}</span><span>Saldo ${Gs(Math.max(s,0))}</span></div></div>`});
+    <div class="bar"><i style="width:${pc}%"></i></div><div class="sp"><span>Pagado ${Gs(pagado(c))}</span><span>Saldo ${Gs(Math.max(s,0))}</span></div>
+    <div class="g2 mt"><button class="btn sm" onclick="editCorr('${c.id}')">✏️ Editar</button><button class="btn sm cob" onclick="renovarCorr('${c.id}')">🔄 Renovar préstamo</button></div></div>`});
   return h;
 }
 function vHist(){
@@ -156,10 +157,62 @@ function vAj(){return `<div class="card"><h3>Respaldo</h3><div class="g2"><butto
 function exportar(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='crz-sanant-'+today()+'.json';a.click()}
 function importar(f){if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.corr||!d.pagos)throw 0;S=d;save();render();toast('Respaldo importado')}catch(e){toast('Archivo no válido')}};r.readAsText(f)}
 
-const TABS=[['hoy','📅','Hoy'],['corr','👥','Corredores'],['hist','🕘','Historial'],['aj','⚙️','Ajustes']];
+function openForm(t,fs,ok){
+  const m=document.createElement('div');m.className='modal';
+  m.innerHTML=`<div class="sheet"><h3>${t}</h3>${fs.map(f=>f.t==='chk'?`<label class="chk"><input type="checkbox" id="f_${f.k}" ${f.v?'checked':''}> ${f.l}</label>`:f.t==='sel'?`<label>${f.l}<select id="f_${f.k}">${f.o.map(o=>`<option value="${o[0]}" ${o[0]==f.v?'selected':''}>${o[1]}</option>`).join('')}</select></label>`:`<label>${f.l}<input id="f_${f.k}" value="${f.t==='d'&&f.v?fmt(f.v):(f.v??'')}" ${f.t==='d'?'inputmode="numeric" placeholder="dd/mm/aaaa" oninput="mask(event)"':f.t==='n'?'inputmode="numeric"':''}></label>`).join('')}
+  <div class="g2 mt"><button class="btn" id="fx">Cancelar</button><button class="big" id="fo" style="padding:11px">Guardar</button></div></div>`;
+  document.body.appendChild(m);
+  m.querySelector('#fx').onclick=()=>m.remove();
+  m.querySelector('#fo').onclick=()=>{const r={};for(const f of fs){const e=m.querySelector('#f_'+f.k);let v=f.t==='chk'?e.checked:e.value.trim();
+    if(f.t==='n')v=parseInt(v.replace(/\D/g,''))||0;
+    if(f.t==='d'){const x=v.match(/^(\d\d)\/(\d\d)\/(\d{4})$/);const s=x&&`${x[3]}-${x[2]}-${x[1]}`;if(!s||iso(dt(s))!==s)return toast('Fecha inválida (dd/mm/aaaa)');v=s}
+    r[f.k]=v}
+    if(ok(r)!==false)m.remove()};
+}
+const cget=id=>S.corr.find(c=>c.id===id);
+function nuevoCorr(){openForm('Nuevo corredor',[{k:'n',l:'Nombre',t:'s',v:'Corredor '},{k:'d',l:'Deuda total (Gs.)',t:'n'},{k:'q',l:'Cuota diaria (Gs.)',t:'n'},{k:'f',l:'Fecha de inicio',t:'d',v:today()}],r=>{
+  if(!r.n||!r.d||!r.q){toast('Completá nombre, deuda y cuota');return false}
+  S.corr.push({id:'c'+uid(),nombre:r.n,deuda:r.d,cuota:r.q,activo:true,previo:0,desde:r.f});save();render();toast('Corredor agregado')})}
+function editCorr(id){const c=cget(id);openForm('Editar '+c.nombre,[{k:'n',l:'Nombre',t:'s',v:c.nombre},{k:'d',l:'Deuda total (Gs.)',t:'n',v:c.deuda},{k:'q',l:'Cuota diaria (Gs.)',t:'n',v:c.cuota},{k:'a',l:'Activo (entra en "Generar cobros")',t:'chk',v:c.activo}],r=>{
+  if(!r.n||!r.d){toast('Nombre y deuda son obligatorios');return false}
+  Object.assign(c,{nombre:r.n,deuda:r.d,cuota:r.q,activo:r.a});save();render();toast('Corredor actualizado')})}
+function renovarCorr(id){const c=cget(id);openForm('Renovar '+c.nombre,[{k:'m',l:'Monto renovado (efectivo entregado, Gs.)',t:'n'},{k:'d',l:'Nueva deuda total (Gs.)',t:'n'},{k:'q',l:'Nueva cuota diaria (Gs.)',t:'n',v:c.cuota},{k:'f',l:'Fecha de renovación',t:'d',v:today()}],r=>{
+  if(!r.d||!r.q){toast('Indicá nueva deuda y cuota');return false}
+  if(r.m)S.renov.push({id:uid(),c:id,m:r.m,f:r.f});
+  Object.assign(c,{deuda:r.d,cuota:r.q,previo:0,desde:r.f,activo:true});save();render();toast('Préstamo renovado')})}
+
+let cyc=null;
+const cStart=i=>iso(new Date(2026,5+2*i,1)),cEnd=i=>iso(new Date(2026,5+2*i+2,0));
+const curCyc=()=>{const n=new Date();return Math.max(0,Math.floor(((n.getFullYear()-2026)*12+n.getMonth()-5)/2))};
+const enR=(f,i)=>f>=cStart(i)&&f<=cEnd(i);
+function cicloCalc(i){
+  let arr=0,r;
+  for(let k=0;k<=i;k++){
+    let cob=0;for(let f=cStart(k);f<=cEnd(k);f=addD(f,1))if(f>='2026-10-01')cob+=totalDia(f);
+    const ren=S.renov.filter(x=>enR(x.f,k)).reduce((a,x)=>a+x.m,0),ret=S.retiros.filter(x=>enR(x.f,k)).reduce((a,x)=>a+x.m,0),gas=S.gastos.filter(x=>enR(x.f,k)).reduce((a,x)=>a+x.m,0);
+    r={cob,ren,caja:cob-ren,arr,disp:cob-ren+arr,ret,gas,sal:cob-ren+arr-ret-gas};arr=r.sal}
+  return r;
+}
+function vCaja(){
+  if(cyc===null)cyc=curCyc();
+  const r=cicloCalc(cyc),deuda=S.corr.reduce((a,c)=>a+Math.max(saldo(c),0),0),inR=a=>a.filter(x=>enR(x.f,cyc)).sort((a,b)=>b.f.localeCompare(a.f));
+  const lst=(a,tipo,fn)=>inR(a).map(x=>`<div class="row"><div class="n"><b>${fn(x)}</b><small>${fmt(x.f)}</small></div><b>${Gs(x.m)}</b><button class="x" onclick="delItem('${tipo}','${x.id}')">✕</button></div>`).join('')||'<div class="sp">Sin registros en este ciclo.</div>';
+  return `<div class="card"><div class="nav"><button onclick="cyc=Math.max(0,cyc-1);render()">‹</button><div style="flex:1;text-align:center"><b>Ciclo ${cyc+1}</b><div class="dia" style="margin:0">${fmt(cStart(cyc))} – ${fmt(cEnd(cyc))}</div></div><button onclick="cyc++;render()">›</button></div></div>
+  <div class="card"><div class="kg"><div><small>Total cobrado</small><b>${Gs(r.cob)}</b></div><div><small>Total renovado</small><b>${Gs(r.ren)}</b></div><div><small>En caja del ciclo</small><b>${Gs(r.caja)}</b></div><div><small>Arrastre anterior</small><b>${Gs(r.arr)}</b></div><div><small>Disponible</small><b>${Gs(r.disp)}</b></div><div><small>Retirado</small><b>${Gs(r.ret)}</b></div><div><small>Gastos</small><b>${Gs(r.gas)}</b></div><div><small>Saldo a arrastrar</small><b>${Gs(r.sal)}</b></div></div>
+  <div class="kg mt"><div><small>Deuda pendiente</small><b>${Gs(deuda)}</b></div><div><small>Efectivo D+C</small><b>${Gs(deuda+r.sal)}</b></div></div></div>
+  <div class="card"><div class="row" style="border:0;padding:0 0 6px"><h3 style="flex:1;margin:0">Renovados</h3><button class="btn sm cob" onclick="addRenov()">＋ Agregar</button></div>${lst(S.renov,'renov',x=>cget(x.c)?cget(x.c).nombre:'—')}</div>
+  <div class="card"><div class="row" style="border:0;padding:0 0 6px"><h3 style="flex:1;margin:0">Retiros</h3><button class="btn sm cob" onclick="addRetiro()">＋ Agregar</button></div>${lst(S.retiros,'retiros',x=>x.nota||'Retiro')}</div>
+  <div class="card"><div class="row" style="border:0;padding:0 0 6px"><h3 style="flex:1;margin:0">Gastos</h3><button class="btn sm cob" onclick="addGasto()">＋ Agregar</button></div>${lst(S.gastos,'gastos',x=>x.cat+(x.desc?' · '+x.desc:''))}</div>`;
+}
+function delItem(t,id){if(!confirm('¿Eliminar este registro?'))return;S[t]=S[t].filter(x=>x.id!==id);save();render()}
+function addRenov(){openForm('Nuevo renovado',[{k:'c',l:'Corredor',t:'sel',o:S.corr.map(c=>[c.id,c.nombre])},{k:'m',l:'Monto (Gs.)',t:'n'},{k:'f',l:'Fecha',t:'d',v:today()}],r=>{if(!r.m){toast('Ingresá el monto');return false}S.renov.push({id:uid(),...r});save();render()})}
+function addRetiro(){openForm('Nuevo retiro',[{k:'m',l:'Monto (Gs.)',t:'n'},{k:'f',l:'Fecha',t:'d',v:today()},{k:'nota',l:'Nota',t:'s'}],r=>{if(!r.m){toast('Ingresá el monto');return false}S.retiros.push({id:uid(),...r});save();render()})}
+function addGasto(){openForm('Nuevo gasto',[{k:'cat',l:'Categoría',t:'sel',o:['Combustible','Cobrador','Descuentos','Otros'].map(x=>[x,x])},{k:'desc',l:'Descripción',t:'s'},{k:'m',l:'Monto (Gs.)',t:'n'},{k:'f',l:'Fecha',t:'d',v:today()}],r=>{if(!r.m){toast('Ingresá el monto');return false}S.gastos.push({id:uid(),...r});save();render()})}
+
+const TABS=[['hoy','📅','Hoy'],['corr','👥','Corredores'],['caja','💰','Caja'],['hist','🕘','Historial'],['aj','⚙️','Ajustes']];
 function render(){
   $('#sub').textContent=DIAS[new Date().getDay()]+' '+fmt(today());
-  $('#app').innerHTML={hoy:vHoy,corr:vCorr,hist:vHist,aj:vAj}[view]();
+  $('#app').innerHTML={hoy:vHoy,corr:vCorr,caja:vCaja,hist:vHist,aj:vAj}[view]();
   $('#tabs').innerHTML=TABS.map(t=>`<button class="${t[0]===view?'on':''}" onclick="view='${t[0]}';render();scrollTo(0,0)"><span>${t[1]}</span>${t[2]}</button>`).join('');
 }
 load();render();
