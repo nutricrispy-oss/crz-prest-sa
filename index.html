@@ -44,7 +44,7 @@ h3{margin:4px 0 10px;font-size:16px}
 .tabs button span{display:block;font-size:20px}.tabs button.on{color:var(--pr);font-weight:700}
 #toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#0f1f1d;color:#fff;padding:10px 16px;border-radius:12px;opacity:0;transition:.25s;pointer-events:none;z-index:9;max-width:90%;text-align:center}
 #toast.on{opacity:1}
-.hid{display:none}.kg{display:grid;grid-template-columns:1fr 1fr;gap:12px}.kg small{color:var(--mu);display:block}.kg b{font-size:17px}.x{border:0;background:none;color:var(--er);font-size:18px;padding:4px 8px}.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:20;display:flex;align-items:flex-end;justify-content:center}.sheet{background:var(--card);width:100%;max-width:640px;border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));max-height:90vh;overflow:auto}.sheet label{display:block;margin-bottom:10px;color:var(--mu);font-size:13px}.sheet label input,.sheet label select{margin-top:4px;color:var(--tx)}.sheet .chk{display:flex;gap:8px;align-items:center;color:var(--tx);font-size:15px}.sheet .chk input{width:auto;margin:0}.sm{padding:5px 9px;font-size:12px}.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mt{margin-top:10px}
+.hid{display:none}.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.sheet textarea{margin-top:4px}.ok{color:var(--ok)}.kg{display:grid;grid-template-columns:1fr 1fr;gap:12px}.kg small{color:var(--mu);display:block}.kg b{font-size:17px}.x{border:0;background:none;color:var(--er);font-size:18px;padding:4px 8px}.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:20;display:flex;align-items:flex-end;justify-content:center}.sheet{background:var(--card);width:100%;max-width:640px;border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));max-height:90vh;overflow:auto}.sheet label{display:block;margin-bottom:10px;color:var(--mu);font-size:13px}.sheet label input,.sheet label select{margin-top:4px;color:var(--tx)}.sheet .chk{display:flex;gap:8px;align-items:center;color:var(--tx);font-size:15px}.sheet .chk input{width:auto;margin:0}.sm{padding:5px 9px;font-size:12px}.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mt{margin-top:10px}
 </style>
 </head>
 <body>
@@ -116,7 +116,7 @@ function vHoy(){
   <button onclick="fecha=addD(fecha,1);render()">›</button></div>
   <div class="dia">${DIAS[dt(fecha).getDay()]}${esHoy?' · hoy':''}</div></div>
   <div class="card"><div class="kpi"><div><small>Cobrado del día</small><b>${Gs(totalDia(fecha))}</b></div><div><small>Cobrados</small><b>${cobr}/${lista.length}</b></div></div>
-  <div class="mt">${dom?`<div class="sun">☀️ Domingo: solo carga manual, si hubiera cobros.</div>`:`<button class="big" onclick="generar(fecha)">⚡ Generar cobros ${esHoy?'de hoy':'del día'}</button>`}</div></div>
+  <div class="mt">${dom?`<div class="sun">☀️ Domingo: solo carga manual, si hubiera cobros.</div>`:`<button class="big" onclick="generar(fecha)">⚡ Generar cobros ${esHoy?'de hoy':'del día'}</button>`}</div><button class="btn mt" style="width:100%" onclick="resumenDia()">📲 Resumen del día por WhatsApp</button></div>
   <div class="card"><h3>Cobros del día</h3>`;
   if(!lista.length)h+=`<div class="sp">${dom?'Sin cobros cargados este domingo.':'Nada por mostrar.'}</div>`;
   lista.forEach(c=>{const ps=pagosDe(c,fecha),np=npDe(c,fecha),m=ps.reduce((a,p)=>a+p.m,0);
@@ -137,7 +137,7 @@ function vCorr(){
     h+=`<div class="card"><div class="row" style="border:0;padding:0"><div class="n"><b>${c.nombre}</b><small>Cuota ${c.cuota?Gs(c.cuota):'—'}</small></div>
     <span class="chip ${s<=0?'c-ok':'c-pe'}">${s<=0?'Saldado':q+' cuotas'}</span></div>
     <div class="bar"><i style="width:${pc}%"></i></div><div class="sp"><span>Pagado ${Gs(pagado(c))}</span><span>Saldo ${Gs(Math.max(s,0))}</span></div>
-    <div class="g2 mt"><button class="btn sm" onclick="editCorr('${c.id}')">✏️ Editar</button><button class="btn sm cob" onclick="renovarCorr('${c.id}')">🔄 Renovar préstamo</button></div></div>`});
+    <div class="g3 mt"><button class="btn sm" onclick="editCorr('${c.id}')">✏️ Editar</button><button class="btn sm cob" onclick="waCorr('${c.id}')">📲 WhatsApp</button><button class="btn sm" onclick="renovarCorr('${c.id}')">🔄 Renovar</button></div></div>`});
   return h;
 }
 function vHist(){
@@ -150,7 +150,21 @@ function vHist(){
   l.forEach(p=>{const c=S.corr.find(x=>x.id===p.c);h+=`<div class="row"><div class="n"><b>${c.nombre}</b><small>${fmt(p.f)}</small></div><span>${Gs(p.m)}</span></div>`});
   return h+`</div>`;
 }
-function vAj(){return `<div class="card"><h3>Respaldo</h3><div class="g2"><button class="btn" onclick="exportar()">⬇ Exportar</button><button class="btn" onclick="$('#imp').click()">⬆ Importar</button></div>
+function vAj(){
+  const lb=lastB(),ask=ls.g(K_ASK)!=='0';
+  return `<div class="card"><h3>☁️ Respaldo en Google Drive</h3>
+  <div class="sp">Último respaldo: <b class="${lb===today()?'ok':''}">${lb?fmt(lb)+(lb===today()?' (hoy ✓)':''):'nunca'}</b></div>
+  <label class="chk" style="display:flex;gap:8px;align-items:center;margin:10px 0"><input type="checkbox" style="width:auto" ${ask?'checked':''} onchange="toggleAsk(this.checked)"> Preguntar una vez al día al abrir la app</label>
+  <div class="g2"><button class="big" style="padding:12px;font-size:15px" onclick="backupDrive()">Respaldar ahora</button><button class="btn" onclick="restoreDrive()">Restaurar de Drive</button></div>
+  <details class="mt"><summary>Conectar mi Google Drive (una sola vez)</summary>
+  <div class="sp mt">ID de cliente de Google:</div><input id="cid" class="mt" placeholder="xxxx.apps.googleusercontent.com" value="${gcid()}" onchange="saveCid(this.value)">
+  <ol class="sp" style="padding-left:18px;line-height:1.6">
+  <li>Entrá a console.cloud.google.com y creá un proyecto.</li><li>Menú «APIs y servicios» → «Biblioteca» → activá <b>Google Drive API</b>.</li>
+  <li>«Pantalla de consentimiento OAuth» → tipo Externo → agregá tu Gmail como <b>usuario de prueba</b>.</li>
+  <li>«Credenciales» → Crear → ID de cliente OAuth → Aplicación web.</li>
+  <li>En «Orígenes autorizados de JavaScript» poné la dirección de tu app (ej. https://tuusuario.github.io).</li><li>Copiá el ID de cliente y pegalo arriba.</li></ol>
+  <div class="sp">La primera vez Google puede avisar «app no verificada»: tocá Avanzado → Continuar. La app solo ve el archivo que ella misma crea.</div></details></div>
+  <div class="card"><h3>Respaldo en archivo</h3><div class="g2"><button class="btn" onclick="exportar()">⬇ Exportar</button><button class="btn" onclick="$('#imp').click()">⬆ Importar</button></div>
   <input type="file" id="imp" accept=".json" class="hid" onchange="importar(this.files[0])"></div>
   <div class="card"><h3>Datos originales</h3><div class="sp">Restaura los datos de la planilla CRz_SANANT_2_0.xlsx. Se pierden los cambios hechos en la app.</div>
   <button class="btn rev mt" onclick="if(confirm('¿Restaurar los datos originales de la planilla?')){S=seed();save();render();toast('Datos restaurados')}">Restaurar planilla</button></div>`}
@@ -173,9 +187,9 @@ const cget=id=>S.corr.find(c=>c.id===id);
 function nuevoCorr(){openForm('Nuevo corredor',[{k:'n',l:'Nombre',t:'s',v:'Corredor '},{k:'d',l:'Deuda total (Gs.)',t:'n'},{k:'q',l:'Cuota diaria (Gs.)',t:'n'},{k:'f',l:'Fecha de inicio',t:'d',v:today()}],r=>{
   if(!r.n||!r.d||!r.q){toast('Completá nombre, deuda y cuota');return false}
   S.corr.push({id:'c'+uid(),nombre:r.n,deuda:r.d,cuota:r.q,activo:true,previo:0,desde:r.f});save();render();toast('Corredor agregado')})}
-function editCorr(id){const c=cget(id);openForm('Editar '+c.nombre,[{k:'n',l:'Nombre',t:'s',v:c.nombre},{k:'d',l:'Deuda total (Gs.)',t:'n',v:c.deuda},{k:'q',l:'Cuota diaria (Gs.)',t:'n',v:c.cuota},{k:'a',l:'Activo (entra en "Generar cobros")',t:'chk',v:c.activo}],r=>{
+function editCorr(id){const c=cget(id);openForm('Editar '+c.nombre,[{k:'n',l:'Nombre',t:'s',v:c.nombre},{k:'d',l:'Deuda total (Gs.)',t:'n',v:c.deuda},{k:'q',l:'Cuota diaria (Gs.)',t:'n',v:c.cuota},{k:'tel',l:'WhatsApp del cliente (opcional)',t:'s',v:c.tel||''},{k:'a',l:'Activo (entra en "Generar cobros")',t:'chk',v:c.activo}],r=>{
   if(!r.n||!r.d){toast('Nombre y deuda son obligatorios');return false}
-  Object.assign(c,{nombre:r.n,deuda:r.d,cuota:r.q,activo:r.a});save();render();toast('Corredor actualizado')})}
+  Object.assign(c,{nombre:r.n,deuda:r.d,cuota:r.q,activo:r.a,tel:r.tel});save();render();toast('Corredor actualizado')})}
 function renovarCorr(id){const c=cget(id);openForm('Renovar '+c.nombre,[{k:'m',l:'Monto renovado (efectivo entregado, Gs.)',t:'n'},{k:'d',l:'Nueva deuda total (Gs.)',t:'n'},{k:'q',l:'Nueva cuota diaria (Gs.)',t:'n',v:c.cuota},{k:'f',l:'Fecha de renovación',t:'d',v:today()}],r=>{
   if(!r.d||!r.q){toast('Indicá nueva deuda y cuota');return false}
   if(r.m)S.renov.push({id:uid(),c:id,m:r.m,f:r.f});
@@ -209,13 +223,105 @@ function addRenov(){openForm('Nuevo renovado',[{k:'c',l:'Corredor',t:'sel',o:S.c
 function addRetiro(){openForm('Nuevo retiro',[{k:'m',l:'Monto (Gs.)',t:'n'},{k:'f',l:'Fecha',t:'d',v:today()},{k:'nota',l:'Nota',t:'s'}],r=>{if(!r.m){toast('Ingresá el monto');return false}S.retiros.push({id:uid(),...r});save();render()})}
 function addGasto(){openForm('Nuevo gasto',[{k:'cat',l:'Categoría',t:'sel',o:['Combustible','Cobrador','Descuentos','Otros'].map(x=>[x,x])},{k:'desc',l:'Descripción',t:'s'},{k:'m',l:'Monto (Gs.)',t:'n'},{k:'f',l:'Fecha',t:'d',v:today()}],r=>{if(!r.m){toast('Ingresá el monto');return false}S.gastos.push({id:uid(),...r});save();render()})}
 
+/* ===== Respaldo en Google Drive ===== */
+const K_CID='crz_gcid',K_LB='crz_lastbackup',K_SNZ='crz_snooze',K_ASK='crz_askb';
+const ls={g:k=>{try{return localStorage.getItem(k)||''}catch(e){return ''}},s:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+const gcid=()=>ls.g(K_CID),lastB=()=>ls.g(K_LB);
+let gTok=null,gExp=0;
+function loadGIS(){return new Promise((res,rej)=>{if(window.google&&google.accounts)return res();const s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.onload=res;s.onerror=()=>rej(new Error('sin conexión'));document.head.appendChild(s)})}
+async function gToken(){
+  if(gTok&&Date.now()<gExp)return gTok;
+  await loadGIS();
+  return new Promise((res,rej)=>{
+    const tc=google.accounts.oauth2.initTokenClient({client_id:gcid(),scope:'https://www.googleapis.com/auth/drive.file',
+      callback:r=>{if(r.error)return rej(new Error(r.error));gTok=r.access_token;gExp=Date.now()+(r.expires_in-60)*1000;res(gTok)},
+      error_callback:e=>rej(new Error(e.type||'cancelado'))});
+    tc.requestAccessToken();
+  });
+}
+const FN='crz-sanant-respaldo.json';
+async function driveFind(H){
+  const r=await fetch('https://www.googleapis.com/drive/v3/files?fields=files(id,modifiedTime)&q='+encodeURIComponent(`name='${FN}' and trashed=false`),{headers:H});
+  if(!r.ok)throw new Error('Drive '+r.status);
+  return ((await r.json()).files||[])[0];
+}
+async function backupDrive(){
+  if(!gcid()){toast('Primero pegá el ID de cliente de Google en Ajustes');view='aj';render();return false}
+  try{
+    toast('Conectando con Google Drive…');
+    const H={Authorization:'Bearer '+await gToken()},f=await driveFind(H),b='crzb'+uid();
+    const body=`--${b}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(f?{}:{name:FN})}\r\n--${b}\r\nContent-Type: application/json\r\n\r\n${JSON.stringify(S)}\r\n--${b}--`;
+    const r=await fetch('https://www.googleapis.com/upload/drive/v3/files'+(f?'/'+f.id:'')+'?uploadType=multipart',{method:f?'PATCH':'POST',headers:{...H,'Content-Type':'multipart/related; boundary='+b},body});
+    if(!r.ok)throw new Error('Drive '+r.status);
+    ls.s(K_LB,today());toast('✅ Copia guardada en Google Drive');if(view==='aj')render();return true;
+  }catch(e){toast('No se pudo respaldar: '+e.message);return false}
+}
+async function restoreDrive(){
+  if(!gcid())return toast('Primero pegá el ID de cliente de Google');
+  try{
+    const H={Authorization:'Bearer '+await gToken()},f=await driveFind(H);
+    if(!f)return toast('No hay copia en Drive todavía');
+    if(!confirm('Se reemplazarán los datos de este teléfono por la copia de Drive del '+fmt(iso(new Date(f.modifiedTime)))+'. ¿Continuar?'))return;
+    const r=await fetch('https://www.googleapis.com/drive/v3/files/'+f.id+'?alt=media',{headers:H});
+    if(!r.ok)throw new Error('Drive '+r.status);
+    const d=await r.json();if(!d.corr||!d.pagos)throw new Error('archivo no válido');
+    S=d;save();render();toast('Copia restaurada desde Drive');
+  }catch(e){toast('No se pudo restaurar: '+e.message)}
+}
+function modal(html){const m=document.createElement('div');m.className='modal';m.innerHTML='<div class="sheet">'+html+'</div>';document.body.appendChild(m);return m}
+function askBackup(){
+  if(ls.g(K_ASK)==='0'||lastB()===today()||ls.g(K_SNZ)===today())return;
+  const ult=lastB()?fmt(lastB()):'nunca';
+  const m=modal(`<h3>💾 Copia de seguridad</h3><div class="sp" style="margin-bottom:12px">Hoy todavía no respaldaste tus datos. Última copia: <b>${ult}</b>.<br>${gcid()?'Se guardará en tu Google Drive.':'Aún no conectaste Google Drive: se descargará un archivo.'}</div>
+  <button class="big" id="bk1">Respaldar ahora</button><div class="g2 mt"><button class="btn" id="bk2">Más tarde</button><button class="btn" id="bk3">Hoy no</button></div>`);
+  m.querySelector('#bk1').onclick=async()=>{m.remove();if(gcid())await backupDrive();else{exportar();ls.s(K_LB,today())}};
+  m.querySelector('#bk2').onclick=()=>m.remove();
+  m.querySelector('#bk3').onclick=()=>{ls.s(K_SNZ,today());m.remove()};
+}
+function saveCid(v){ls.s(K_CID,v.trim());gTok=null;toast(v.trim()?'ID guardado':'ID borrado')}
+function toggleAsk(on){ls.s(K_ASK,on?'1':'0')}
+
+/* ===== WhatsApp ===== */
+const CAP=c=>c.cuota?Math.round(c.cuota/28000*2)*500000:0;
+function nextCobro(f,n){let d=f;while(n>0){d=addD(d,1);if(dt(d).getDay()!==0)n--}return d}
+function estado(c){
+  const t=today(),pg=S.pagos.filter(p=>p.c===c.id&&p.f>=(c.desde||'')).map(p=>p.f).sort();
+  const ini=c.desde||pg[0]||t,s=Math.max(saldo(c),0),q=c.cuota?Math.ceil(s/c.cuota):0;
+  const base=(dt(t).getDay()===0||pagosDe(c,t).length)?t:addD(t,-1);
+  const dias=Math.max(0,Math.round((dt(t)-dt(ini))/864e5))+1,sobra=CAP(c)-s;
+  return {ini,dias,pagadas:new Set(pg).size,s,q,venc:q?nextCobro(base,q):t,sobra,cap:CAP(c)};
+}
+function msgEstado(c){
+  const e=estado(c);
+  return `Hola ${c.nombre} 👋\nTe comparto el estado de tu crédito al ${fmt(today())}:\n\n`+
+  `📅 Inicio de pagos: ${fmt(e.ini)}\n⏳ Días pagando: ${e.dias} (${e.pagadas} cuotas pagadas)\n💵 Cuota diaria: ${Gs(c.cuota)}\n`+
+  (e.s>0?`📌 Saldo pendiente: ${Gs(e.s)}\n🔢 Cuotas restantes: ${e.q}\n🗓️ Vencimiento estimado: ${fmt(e.venc)}\n\n`+
+  (e.cap?(e.sobra>=0?`🔄 Si renovás hoy, te quedarían: ${Gs(e.sobra)}`:`🔄 Si renovás hoy, faltarían ${Gs(-e.sobra)} para completar el monto`):''):`✅ ¡Tu crédito está saldado!`)+`\n\nGracias por tu puntualidad 🙌`;
+}
+function waNum(t){let n=(t||'').replace(/\D/g,'');if(!n)return '';if(n.startsWith('0'))n='595'+n.slice(1);return n}
+function waOpen(txt,tel){window.open('https://wa.me/'+waNum(tel)+'?text='+encodeURIComponent(txt),'_blank')}
+function waCorr(id){
+  const c=cget(id),m=modal(`<h3>📲 Detalle para ${c.nombre}</h3><label>WhatsApp del cliente (opcional)<input id="wt" inputmode="tel" placeholder="0981 123 456" value="${c.tel||''}"></label>
+  <label>Mensaje (podés editarlo)<textarea id="wm" rows="12" style="width:100%;padding:10px;border-radius:12px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit">${msgEstado(c).replace(/</g,'&lt;')}</textarea></label>
+  <div class="g2"><button class="btn" id="wc">Copiar</button><button class="big" id="ws" style="padding:11px">Enviar</button></div><button class="btn mt" id="wx" style="width:100%">Cerrar</button>`);
+  const val=()=>m.querySelector('#wm').value,tel=()=>m.querySelector('#wt').value;
+  m.querySelector('#ws').onclick=()=>{if(tel()!==(c.tel||'')){c.tel=tel();save()}waOpen(val(),tel())};
+  m.querySelector('#wc').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(val()).then(()=>toast('Mensaje copiado'),()=>toast('No se pudo copiar'))};
+  m.querySelector('#wx').onclick=()=>m.remove();
+}
+function resumenDia(){
+  const f=fecha,tot=totalDia(f);
+  const ok=S.corr.filter(c=>pagosDe(c,f).length),no=S.corr.filter(c=>npDe(c,f));
+  waOpen(`📊 Resumen de cobros — ${DIAS[dt(f).getDay()]} ${fmt(f)}\n\n💰 Cobrado: ${Gs(tot)}\n✅ Cobraron: ${ok.length}\n`+(no.length?`❌ No pagaron (${no.length}): ${no.map(c=>c.nombre.replace('Corredor ','')).join(', ')}`:'❌ No pagaron: ninguno'),'');
+}
+
 const TABS=[['hoy','📅','Hoy'],['corr','👥','Corredores'],['caja','💰','Caja'],['hist','🕘','Historial'],['aj','⚙️','Ajustes']];
 function render(){
   $('#sub').textContent=DIAS[new Date().getDay()]+' '+fmt(today());
   $('#app').innerHTML={hoy:vHoy,corr:vCorr,caja:vCaja,hist:vHist,aj:vAj}[view]();
   $('#tabs').innerHTML=TABS.map(t=>`<button class="${t[0]===view?'on':''}" onclick="view='${t[0]}';render();scrollTo(0,0)"><span>${t[1]}</span>${t[2]}</button>`).join('');
 }
-load();render();
+load();render();setTimeout(askBackup,700);
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
