@@ -1,24 +1,37 @@
 {
+ "id": "crz-sanant-app",
  "name": "CRz SANANT",
  "short_name": "SANANT",
+ "description": "Control de cobros, renovados y caja - CRz SANANT",
+ "lang": "es",
  "start_url": "./index.html",
  "scope": "./",
  "display": "standalone",
+ "orientation": "portrait",
  "background_color": "#0f766e",
  "theme_color": "#0f766e",
- "orientation": "portrait",
+ "categories": [
+  "finance",
+  "business"
+ ],
  "icons": [
   {
    "src": "icon-192.png",
    "sizes": "192x192",
    "type": "image/png",
-   "purpose": "any maskable"
+   "purpose": "any"
   },
   {
    "src": "icon-512.png",
    "sizes": "512x512",
    "type": "image/png",
-   "purpose": "any maskable"
+   "purpose": "any"
+  },
+  {
+   "src": "icon-maskable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
   }
  ]
 }
