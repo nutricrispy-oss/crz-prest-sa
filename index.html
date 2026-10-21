@@ -44,7 +44,7 @@ h3{margin:4px 0 10px;font-size:16px}
 .tabs button span{display:block;font-size:20px}.tabs button.on{color:var(--pr);font-weight:700}
 #toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#0f1f1d;color:#fff;padding:10px 16px;border-radius:12px;opacity:0;transition:.25s;pointer-events:none;z-index:9;max-width:90%;text-align:center}
 #toast.on{opacity:1}
-.hid{display:none}.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.sheet textarea{margin-top:4px}.ok{color:var(--ok)}.kg{display:grid;grid-template-columns:1fr 1fr;gap:12px}.kg small{color:var(--mu);display:block}.kg b{font-size:17px}.x{border:0;background:none;color:var(--er);font-size:18px;padding:4px 8px}.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:20;display:flex;align-items:flex-end;justify-content:center}.sheet{background:var(--card);width:100%;max-width:640px;border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));max-height:90vh;overflow:auto}.sheet label{display:block;margin-bottom:10px;color:var(--mu);font-size:13px}.sheet label input,.sheet label select{margin-top:4px;color:var(--tx)}.sheet .chk{display:flex;gap:8px;align-items:center;color:var(--tx);font-size:15px}.sheet .chk input{width:auto;margin:0}.sm{padding:5px 9px;font-size:12px}.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mt{margin-top:10px}
+.hid{display:none}.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}.lock{position:fixed;inset:0;background:linear-gradient(135deg,#0f766e,#14b8a6);z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;gap:12px;padding:20px;text-align:center}.lock input{max-width:230px;text-align:center;font-size:28px;letter-spacing:10px;color:#0f1f1d;background:#fff}.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.sheet textarea{margin-top:4px}.ok{color:var(--ok)}.kg{display:grid;grid-template-columns:1fr 1fr;gap:12px}.kg small{color:var(--mu);display:block}.kg b{font-size:17px}.x{border:0;background:none;color:var(--er);font-size:18px;padding:4px 8px}.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:20;display:flex;align-items:flex-end;justify-content:center}.sheet{background:var(--card);width:100%;max-width:640px;border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));max-height:90vh;overflow:auto}.sheet label{display:block;margin-bottom:10px;color:var(--mu);font-size:13px}.sheet label input,.sheet label select{margin-top:4px;color:var(--tx)}.sheet .chk{display:flex;gap:8px;align-items:center;color:var(--tx);font-size:15px}.sheet .chk input{width:auto;margin:0}.sm{padding:5px 9px;font-size:12px}.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mt{margin-top:10px}
 </style>
 </head>
 <body>
@@ -117,7 +117,7 @@ function vHoy(){
   <div class="dia">${DIAS[dt(fecha).getDay()]}${esHoy?' · hoy':''}</div></div>
   <div class="card"><div class="kpi"><div><small>Cobrado del día</small><b>${Gs(totalDia(fecha))}</b></div><div><small>Cobrados</small><b>${cobr}/${lista.length}</b></div></div>
   <div class="mt">${dom?`<div class="sun">☀️ Domingo: solo carga manual, si hubiera cobros.</div>`:`<button class="big" onclick="generar(fecha)">⚡ Generar cobros ${esHoy?'de hoy':'del día'}</button>`}</div><button class="btn mt" style="width:100%" onclick="resumenDia()">📲 Resumen del día por WhatsApp</button></div>
-  <div class="card"><h3>Cobros del día</h3>`;
+  ${alertas()}<div class="card"><h3>Cobros del día</h3>`;
   if(!lista.length)h+=`<div class="sp">${dom?'Sin cobros cargados este domingo.':'Nada por mostrar.'}</div>`;
   lista.forEach(c=>{const ps=pagosDe(c,fecha),np=npDe(c,fecha),m=ps.reduce((a,p)=>a+p.m,0);
     h+=`<div class="row"><div class="n"><b>${c.nombre}</b><small>${ps.length?Gs(m):'Cuota '+Gs(c.cuota)}</small></div>
@@ -128,16 +128,6 @@ function vHoy(){
   <select id="mc" onchange="$('#mm').value=S.corr.find(c=>c.id===this.value).cuota||''">${S.corr.filter(c=>saldo(c)>0).map(c=>`<option value="${c.id}">${c.nombre}</option>`).join('')}</select>
   <input id="mm" inputmode="numeric" placeholder="Monto Gs." value="${(S.corr.find(c=>saldo(c)>0)||{}).cuota||''}"></div>
   <button class="big mt" onclick="const m=parseInt($('#mm').value.replace(/\\D/g,''));cobrar($('#mc').value,fecha,m)">Agregar cobro</button></details></div>`;
-  return h;
-}
-function vCorr(){
-  const tot=S.corr.reduce((a,c)=>a+saldo(c),0);
-  let h=`<div class="card"><div class="kpi"><div><small>Deuda pendiente total</small><b>${Gs(tot)}</b></div><div><small>Activos</small><b>${activos().length}</b></div></div><button class="big mt" onclick="nuevoCorr()">＋ Nuevo corredor</button></div>`;
-  S.corr.forEach(c=>{const s=saldo(c),pc=Math.min(100,pagado(c)/c.deuda*100),q=c.cuota?Math.ceil(s/c.cuota):0;
-    h+=`<div class="card"><div class="row" style="border:0;padding:0"><div class="n"><b>${c.nombre}</b><small>Cuota ${c.cuota?Gs(c.cuota):'—'}</small></div>
-    <span class="chip ${s<=0?'c-ok':'c-pe'}">${s<=0?'Saldado':q+' cuotas'}</span></div>
-    <div class="bar"><i style="width:${pc}%"></i></div><div class="sp"><span>Pagado ${Gs(pagado(c))}</span><span>Saldo ${Gs(Math.max(s,0))}</span></div>
-    <div class="g3 mt"><button class="btn sm" onclick="editCorr('${c.id}')">✏️ Editar</button><button class="btn sm cob" onclick="waCorr('${c.id}')">📲 WhatsApp</button><button class="btn sm" onclick="renovarCorr('${c.id}')">🔄 Renovar</button></div></div>`});
   return h;
 }
 function vHist(){
@@ -152,7 +142,7 @@ function vHist(){
 }
 function vAj(){
   const lb=lastB(),ask=ls.g(K_ASK)!=='0';
-  return `<div class="card"><h3>☁️ Respaldo en Google Drive</h3>
+  return `${pinCard()}<div class="card"><h3>☁️ Respaldo en Google Drive</h3>
   <div class="sp">Último respaldo: <b class="${lb===today()?'ok':''}">${lb?fmt(lb)+(lb===today()?' (hoy ✓)':''):'nunca'}</b></div>
   <label class="chk" style="display:flex;gap:8px;align-items:center;margin:10px 0"><input type="checkbox" style="width:auto" ${ask?'checked':''} onchange="toggleAsk(this.checked)"> Preguntar una vez al día al abrir la app</label>
   <div class="g2"><button class="big" style="padding:12px;font-size:15px" onclick="backupDrive()">Respaldar ahora</button><button class="btn" onclick="restoreDrive()">Restaurar de Drive</button></div>
@@ -214,6 +204,7 @@ function vCaja(){
   return `<div class="card"><div class="nav"><button onclick="cyc=Math.max(0,cyc-1);render()">‹</button><div style="flex:1;text-align:center"><b>Ciclo ${cyc+1}</b><div class="dia" style="margin:0">${fmt(cStart(cyc))} – ${fmt(cEnd(cyc))}</div></div><button onclick="cyc++;render()">›</button></div></div>
   <div class="card"><div class="kg"><div><small>Total cobrado</small><b>${Gs(r.cob)}</b></div><div><small>Total renovado</small><b>${Gs(r.ren)}</b></div><div><small>En caja del ciclo</small><b>${Gs(r.caja)}</b></div><div><small>Arrastre anterior</small><b>${Gs(r.arr)}</b></div><div><small>Disponible</small><b>${Gs(r.disp)}</b></div><div><small>Retirado</small><b>${Gs(r.ret)}</b></div><div><small>Gastos</small><b>${Gs(r.gas)}</b></div><div><small>Saldo a arrastrar</small><b>${Gs(r.sal)}</b></div></div>
   <div class="kg mt"><div><small>Deuda pendiente</small><b>${Gs(deuda)}</b></div><div><small>Efectivo D+C</small><b>${Gs(deuda+r.sal)}</b></div></div></div>
+  <div class="card"><div class="g2"><button class="btn" onclick="informe('pdf')">📄 Informe PDF</button><button class="btn" onclick="informe('csv')">📊 Excel (CSV)</button></div></div>
   <div class="card"><div class="row" style="border:0;padding:0 0 6px"><h3 style="flex:1;margin:0">Renovados</h3><button class="btn sm cob" onclick="addRenov()">＋ Agregar</button></div>${lst(S.renov,'renov',x=>cget(x.c)?cget(x.c).nombre:'—')}</div>
   <div class="card"><div class="row" style="border:0;padding:0 0 6px"><h3 style="flex:1;margin:0">Retiros</h3><button class="btn sm cob" onclick="addRetiro()">＋ Agregar</button></div>${lst(S.retiros,'retiros',x=>x.nota||'Retiro')}</div>
   <div class="card"><div class="row" style="border:0;padding:0 0 6px"><h3 style="flex:1;margin:0">Gastos</h3><button class="btn sm cob" onclick="addGasto()">＋ Agregar</button></div>${lst(S.gastos,'gastos',x=>x.cat+(x.desc?' · '+x.desc:''))}</div>`;
@@ -291,8 +282,10 @@ function estado(c){
   const dias=Math.max(0,Math.round((dt(t)-dt(ini))/864e5))+1,sobra=CAP(c)-s;
   return {ini,dias,pagadas:new Set(pg).size,s,q,venc:q?nextCobro(base,q):t,sobra,cap:CAP(c)};
 }
-function msgEstado(c){
+function msgEstado(c,tipo){
   const e=estado(c);
+  if(tipo==='mora'){const n=mora(c);return `Hola ${c.nombre} 👋\nTe escribo para recordarte que tenés ${n} cuotas sin pagar (${Gs(n*c.cuota)}).\n\n📌 Saldo pendiente: ${Gs(e.s)}\n💵 Cuota diaria: ${Gs(c.cuota)}\n\nCualquier consulta avisame. ¡Gracias! 🙏`}
+  if(tipo==='venc')return `Hola ${c.nombre} 👋\nTe quedan solo ${e.q} cuotas para terminar tu crédito (vence aprox. el ${fmt(e.venc)}). 🎉\n\n`+(e.cap?(e.sobra>=0?`🔄 Si renovás hoy, te quedarían: ${Gs(e.sobra)}`:`🔄 Si renovás hoy, faltarían ${Gs(-e.sobra)} para completar el monto`):'')+`\n\n¿Te interesa renovar? Avisame y lo preparamos.`;
   return `Hola ${c.nombre} 👋\nTe comparto el estado de tu crédito al ${fmt(today())}:\n\n`+
   `📅 Inicio de pagos: ${fmt(e.ini)}\n⏳ Días pagando: ${e.dias} (${e.pagadas} cuotas pagadas)\n💵 Cuota diaria: ${Gs(c.cuota)}\n`+
   (e.s>0?`📌 Saldo pendiente: ${Gs(e.s)}\n🔢 Cuotas restantes: ${e.q}\n🗓️ Vencimiento estimado: ${fmt(e.venc)}\n\n`+
@@ -300,9 +293,9 @@ function msgEstado(c){
 }
 function waNum(t){let n=(t||'').replace(/\D/g,'');if(!n)return '';if(n.startsWith('0'))n='595'+n.slice(1);return n}
 function waOpen(txt,tel){window.open('https://wa.me/'+waNum(tel)+'?text='+encodeURIComponent(txt),'_blank')}
-function waCorr(id){
-  const c=cget(id),m=modal(`<h3>📲 Detalle para ${c.nombre}</h3><label>WhatsApp del cliente (opcional)<input id="wt" inputmode="tel" placeholder="0981 123 456" value="${c.tel||''}"></label>
-  <label>Mensaje (podés editarlo)<textarea id="wm" rows="12" style="width:100%;padding:10px;border-radius:12px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit">${msgEstado(c).replace(/</g,'&lt;')}</textarea></label>
+function waCorr(id,tipo){
+  const c=cget(id),m=modal(`<h3>📲 ${tipo==='mora'?'Recordatorio':tipo==='venc'?'Renovación':'Estado de cuenta'} · ${esc(c.nombre)}</h3><label>WhatsApp del cliente (opcional)<input id="wt" inputmode="tel" placeholder="0981 123 456" value="${c.tel||''}"></label>
+  <label>Mensaje (podés editarlo)<textarea id="wm" rows="12" style="width:100%;padding:10px;border-radius:12px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit">${msgEstado(c,tipo).replace(/</g,'&lt;')}</textarea></label>
   <div class="g2"><button class="btn" id="wc">Copiar</button><button class="big" id="ws" style="padding:11px">Enviar</button></div><button class="btn mt" id="wx" style="width:100%">Cerrar</button>`);
   const val=()=>m.querySelector('#wm').value,tel=()=>m.querySelector('#wt').value;
   m.querySelector('#ws').onclick=()=>{if(tel()!==(c.tel||'')){c.tel=tel();save()}waOpen(val(),tel())};
@@ -315,13 +308,157 @@ function resumenDia(){
   waOpen(`📊 Resumen de cobros — ${DIAS[dt(f).getDay()]} ${fmt(f)}\n\n💰 Cobrado: ${Gs(tot)}\n✅ Cobraron: ${ok.length}\n`+(no.length?`❌ No pagaron (${no.length}): ${no.map(c=>c.nombre.replace('Corredor ','')).join(', ')}`:'❌ No pagaron: ninguno'),'');
 }
 
+/* ===== Mora, vencimientos, búsqueda ===== */
+const esc=s=>String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const qRest=c=>c.cuota&&saldo(c)>0?Math.ceil(saldo(c)/c.cuota):0;
+function iniCorr(c){return c.desde||S.pagos.filter(p=>p.c===c.id).map(p=>p.f).sort()[0]||today()}
+function mora(c){
+  if(!c.activo||!c.cuota||saldo(c)<=0)return 0;
+  const ini=iniCorr(c);let n=0,f=today();
+  if(!npDe(c,f))f=addD(f,-1);
+  for(let i=0;i<60;i++,f=addD(f,-1)){
+    if(dt(f).getDay()===0)continue;
+    if(f<ini||pagosDe(c,f).length)break;
+    n++;
+  }
+  return n;
+}
+function ultPago(c){return S.pagos.filter(p=>p.c===c.id).map(p=>p.f).sort().pop()||''}
+let cf={q:'',f:'todos',o:'plan'};
+const nMora=()=>S.corr.filter(c=>mora(c)>=2).length;
+const nVenc=()=>S.corr.filter(c=>c.activo&&qRest(c)>0&&qRest(c)<=7).length;
+function filtrados(){
+  let l=S.corr.filter(c=>c.nombre.toLowerCase().includes(cf.q.toLowerCase()));
+  if(cf.f==='mora')l=l.filter(c=>mora(c)>=2);
+  else if(cf.f==='venc')l=l.filter(c=>c.activo&&qRest(c)>0&&qRest(c)<=7);
+  else if(cf.f==='activos')l=l.filter(c=>c.activo&&saldo(c)>0);
+  const o={saldo:(a,b)=>saldo(b)-saldo(a),venc:(a,b)=>(qRest(a)||999)-(qRest(b)||999),mora:(a,b)=>mora(b)-mora(a),az:(a,b)=>a.nombre.localeCompare(b.nombre,'es',{numeric:true})}[cf.o];
+  return o?[...l].sort(o):l;
+}
+function cardCorr(c){
+  const s=saldo(c),pc=Math.min(100,pagado(c)/c.deuda*100),q=qRest(c),m=mora(c);
+  return `<div class="card"><div class="row" style="border:0;padding:0"><div class="n"><b>${esc(c.nombre)}</b><small>Cuota ${c.cuota?Gs(c.cuota):'—'}${ultPago(c)?' · último pago '+fmt(ultPago(c)):''}</small></div>
+  ${m>=2?`<span class="chip c-no">${m} días sin pagar</span>`:''}<span class="chip ${s<=0?'c-ok':q<=7?'c-pe':'c-ok'}" style="margin-left:6px">${s<=0?'Saldado':q+' cuotas'}</span></div>
+  <div class="bar"><i style="width:${pc}%"></i></div><div class="sp"><span>Pagado ${Gs(pagado(c))}</span><span>Saldo ${Gs(Math.max(s,0))}</span></div>
+  <div class="g2 mt"><button class="btn sm" onclick="editCorr('${c.id}')">✏️ Editar</button><button class="btn sm" onclick="pagosCorr('${c.id}')">🧾 Pagos</button><button class="btn sm cob" onclick="waCorr('${c.id}')">📲 Estado de cuenta</button><button class="btn sm" onclick="renovarCorr('${c.id}')">🔄 Renovar</button></div>
+  ${m>=2?`<button class="btn sm rev mt" style="width:100%" onclick="waCorr('${c.id}','mora')">🔔 Recordar atraso por WhatsApp</button>`:''}
+  ${q>0&&q<=7&&m<2?`<button class="btn sm cob mt" style="width:100%" onclick="waCorr('${c.id}','venc')">💬 Ofrecer renovación por WhatsApp</button>`:''}</div>`;
+}
+function listaCorr(){const l=filtrados();return l.length?l.map(cardCorr).join(''):'<div class="card sp">No hay corredores con ese filtro.</div>'}
+function vCorr(){
+  const tot=S.corr.reduce((a,c)=>a+Math.max(saldo(c),0),0),nm=nMora(),nv=nVenc();
+  const chip=(k,t)=>`<button class="btn sm" style="${cf.f===k?'background:var(--pr);color:#fff;border-color:var(--pr)':''}" onclick="cf.f='${k}';render()">${t}</button>`;
+  return `<div class="card"><div class="kpi"><div><small>Deuda pendiente total</small><b>${Gs(tot)}</b></div><div><small>Activos</small><b>${activos().length}</b></div></div><button class="big mt" onclick="nuevoCorr()">＋ Nuevo corredor</button></div>
+  <div class="card"><input placeholder="🔍 Buscar corredor…" value="${esc(cf.q)}" oninput="cf.q=this.value;$('#clist').innerHTML=listaCorr()">
+  <div class="chips mt">${chip('todos','Todos')}${chip('activos','Activos')}${chip('mora','⚠️ Morosos ('+nm+')')}${chip('venc','🔔 Por vencer ('+nv+')')}</div>
+  <select class="mt" onchange="cf.o=this.value;render()"><option value="plan" ${cf.o==='plan'?'selected':''}>Orden de la planilla</option><option value="saldo" ${cf.o==='saldo'?'selected':''}>Mayor saldo</option><option value="venc" ${cf.o==='venc'?'selected':''}>Vence primero</option><option value="mora" ${cf.o==='mora'?'selected':''}>Más atraso</option><option value="az" ${cf.o==='az'?'selected':''}>A–Z</option></select></div>
+  <div id="clist">${listaCorr()}</div>`;
+}
+function alertas(){
+  if(fecha!==today())return '';
+  const m=nMora(),v=nVenc();let h='';
+  if(m)h+=`<div class="card" onclick="cf.f='mora';cf.o='mora';view='corr';render()" style="cursor:pointer;border-color:var(--er)"><b>⚠️ ${m} corredor${m>1?'es':''} con atraso</b><div class="sp">Tocá para verlos y enviar recordatorios</div></div>`;
+  if(v)h+=`<div class="card" onclick="cf.f='venc';cf.o='venc';view='corr';render()" style="cursor:pointer;border-color:var(--wa)"><b>🔔 ${v} terminan de pagar en 7 cuotas o menos</b><div class="sp">Buen momento para ofrecer la renovación</div></div>`;
+  return h;
+}
+function pagosCorr(id){
+  const c=cget(id),ps=S.pagos.filter(p=>p.c===id).sort((a,b)=>b.f.localeCompare(a.f)),np=S.nopago.filter(p=>p.c===id).sort((a,b)=>b.f.localeCompare(a.f));
+  const filas=[...ps.map(p=>({f:p.f,m:p.m,t:'ok',man:p.man})),...np.map(p=>({f:p.f,m:p.m,t:'no'}))].sort((a,b)=>b.f.localeCompare(a.f)).slice(0,90);
+  const m=modal(`<h3>🧾 Pagos de ${esc(c.nombre)}</h3><div class="sp" style="margin-bottom:8px">${ps.length} cuotas registradas en la app · ${np.length} sin pagar${c.previo?` · pagado antes: ${Gs(c.previo)}`:''}</div>
+  ${filas.map(x=>`<div class="row"><div class="n"><b>${fmt(x.f)}</b><small>${DIAS[dt(x.f).getDay()]}${x.man?' · manual':''}</small></div><b>${Gs(x.m)}</b><span class="chip ${x.t==='ok'?'c-ok':'c-no'}" style="margin-left:8px">${x.t==='ok'?'Pagó':'No pagó'}</span></div>`).join('')||'<div class="sp">Sin registros.</div>'}
+  <div class="sp mt">Para revertir un cobro, andá a «Hoy» en esa fecha.</div><button class="btn mt" id="pc" style="width:100%">Cerrar</button>`);
+  m.querySelector('#pc').onclick=()=>m.remove();
+}
+
+/* ===== Informe ===== */
+function datosInforme(){
+  const i=cyc===null?curCyc():cyc,r=cicloCalc(i),ini=cStart(i)<'2026-10-01'?'2026-10-01':cStart(i),fin=cEnd(i),dias=[];
+  for(let f=ini;f<=fin;f=addD(f,1)){const t=totalDia(f);if(t)dias.push([f,t])}
+  const inR=a=>a.filter(x=>enR(x.f,i)).sort((a,b)=>a.f.localeCompare(b.f));
+  return {i,r,dias,ren:inR(S.renov),ret:inR(S.retiros),gas:inR(S.gastos),ini:cStart(i),fin};
+}
+function csvInforme(){
+  const d=datosInforme(),r=d.r,q=v=>'"'+String(v).replace(/"/g,'""')+'"',L=[];
+  L.push([q('INFORME CRz SANANT - Ciclo '+(d.i+1)),q(fmt(d.ini)+' al '+fmt(d.fin))]);L.push([]);
+  L.push([q('RESUMEN')]);
+  [['Total cobrado',r.cob],['Total renovado',r.ren],['En caja del ciclo',r.caja],['Arrastre anterior',r.arr],['Disponible',r.disp],['Retirado',r.ret],['Gastos',r.gas],['Saldo a arrastrar',r.sal]].forEach(x=>L.push([q(x[0]),x[1]]));
+  L.push([]);L.push([q('COBROS POR DIA')]);L.push([q('Fecha'),q('Dia'),q('Monto')]);d.dias.forEach(x=>L.push([q(fmt(x[0])),q(DIAS[dt(x[0]).getDay()]),x[1]]));
+  L.push([]);L.push([q('RENOVADOS')]);L.push([q('Fecha'),q('Corredor'),q('Monto')]);d.ren.forEach(x=>L.push([q(fmt(x.f)),q(cget(x.c)?cget(x.c).nombre:''),x.m]));
+  L.push([]);L.push([q('RETIROS')]);L.push([q('Fecha'),q('Nota'),q('Monto')]);d.ret.forEach(x=>L.push([q(fmt(x.f)),q(x.nota||''),x.m]));
+  L.push([]);L.push([q('GASTOS')]);L.push([q('Fecha'),q('Categoria'),q('Descripcion'),q('Monto')]);d.gas.forEach(x=>L.push([q(fmt(x.f)),q(x.cat),q(x.desc||''),x.m]));
+  L.push([]);L.push([q('CORREDORES (estado actual)')]);L.push([q('Corredor'),q('Cuota'),q('Pagado'),q('Saldo'),q('Cuotas restantes'),q('Dias sin pagar')]);
+  S.corr.forEach(c=>L.push([q(c.nombre),c.cuota,pagado(c),Math.max(saldo(c),0),qRest(c),mora(c)]));
+  return '﻿'+L.map(x=>x.join(';')).join('\r\n');
+}
+function htmlInforme(){
+  const d=datosInforme(),r=d.r;
+  const tb=(t,h,rows)=>`<h2>${t}</h2><table><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr>${rows.map(x=>`<tr>${x.map((v,i)=>`<td${typeof v==='number'?' class="r"':''}>${typeof v==='number'?Gs(v):esc(v)}</td>`).join('')}</tr>`).join('')||`<tr><td colspan="${h.length}">Sin registros</td></tr>`}</table>`;
+  return `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Informe CRz SANANT - Ciclo ${d.i+1}</title><style>@page{size:A4;margin:14mm}body{font:12px/1.4 Arial,sans-serif;color:#111}h1{font-size:18px;margin:0}h2{font-size:14px;margin:18px 0 6px;color:#0f766e}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:4px 6px;text-align:left}th{background:#e6f4f2}td.r{text-align:right}.s td:first-child{font-weight:700}</style></head><body>
+  <h1>CRz SANANT · Informe del Ciclo ${d.i+1}</h1><div>${fmt(d.ini)} al ${fmt(d.fin)} · emitido el ${fmt(today())}</div>
+  ${tb('Resumen',['Concepto','Monto'],[['Total cobrado',r.cob],['Total renovado',r.ren],['En caja del ciclo',r.caja],['Arrastre anterior',r.arr],['Disponible',r.disp],['Retirado',r.ret],['Gastos',r.gas],['Saldo a arrastrar',r.sal]])}
+  ${tb('Cobros por día',['Fecha','Día','Monto'],d.dias.map(x=>[fmt(x[0]),DIAS[dt(x[0]).getDay()],x[1]]))}
+  ${tb('Renovados',['Fecha','Corredor','Monto'],d.ren.map(x=>[fmt(x.f),cget(x.c)?cget(x.c).nombre:'',x.m]))}
+  ${tb('Retiros',['Fecha','Nota','Monto'],d.ret.map(x=>[fmt(x.f),x.nota||'',x.m]))}
+  ${tb('Gastos',['Fecha','Categoría','Descripción','Monto'],d.gas.map(x=>[fmt(x.f),x.cat,x.desc||'',x.m]))}
+  ${tb('Corredores (estado actual)',['Corredor','Cuota','Pagado','Saldo','Cuotas rest.','Días sin pagar'],S.corr.map(c=>[c.nombre,c.cuota,pagado(c),Math.max(saldo(c),0),String(qRest(c)),String(mora(c))]))}
+  </body></html>`;
+}
+function informe(tipo){
+  if(tipo==='csv'){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csvInforme()],{type:'text/csv;charset=utf-8'}));a.download='crz-sanant-informe-ciclo-'+(datosInforme().i+1)+'.csv';a.click();return toast('Archivo listo: ábrelo con Excel')}
+  const w=window.open('','_blank');if(!w)return toast('El navegador bloqueó la ventana. Permitila e intentá de nuevo');
+  w.document.write(htmlInforme());w.document.close();setTimeout(()=>{try{w.focus();w.print()}catch(e){}},500);
+  toast('Elegí «Guardar como PDF» al imprimir');
+}
+
+/* ===== PIN ===== */
+const K_PIN='crz_pin',K_PLEN='crz_pinlen';
+async function sha(s){try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('crz|'+s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){let h=0;for(const ch of 'crz|'+s)h=(h*31+ch.charCodeAt(0))|0;return 'x'+h}}
+function pinCard(){
+  const on=!!ls.g(K_PIN);
+  return `<div class="card"><h3>🔒 PIN de acceso</h3><div class="sp">${on?'La app pide el PIN al abrirla y después de 2 minutos fuera de ella.':'Protegé la app con un PIN de 4 a 6 dígitos.'} Es un bloqueo de pantalla: no cifra los datos guardados.</div>
+  <div class="g2 mt">${on?`<button class="btn" onclick="pinDlg('cambiar')">Cambiar PIN</button><button class="btn rev" onclick="pinDlg('quitar')">Quitar PIN</button>`:`<button class="big" style="grid-column:span 2;padding:12px;font-size:15px" onclick="pinDlg('nuevo')">Activar PIN</button>`}</div></div>`;
+}
+function pinDlg(modo){
+  const need=modo!=='nuevo',inp=(id,l)=>`<label>${l}<input id="${id}" type="password" inputmode="numeric" maxlength="6" autocomplete="off"></label>`;
+  const m=modal(`<h3>${{nuevo:'Activar PIN',cambiar:'Cambiar PIN',quitar:'Quitar PIN'}[modo]}</h3>${need?inp('p0','PIN actual'):''}${modo!=='quitar'?inp('p1','PIN nuevo (4 a 6 dígitos)')+inp('p2','Repetir PIN nuevo'):''}
+  <div class="g2 mt"><button class="btn" id="px">Cancelar</button><button class="big" id="po" style="padding:11px">Guardar</button></div>`);
+  m.querySelector('#px').onclick=()=>m.remove();
+  m.querySelector('#po').onclick=async()=>{
+    if(need&&await sha(m.querySelector('#p0').value)!==ls.g(K_PIN))return toast('PIN actual incorrecto');
+    if(modo==='quitar'){ls.s(K_PIN,'');ls.s(K_PLEN,'');m.remove();render();return toast('PIN quitado')}
+    const a=m.querySelector('#p1').value,b=m.querySelector('#p2').value;
+    if(!/^\d{4,6}$/.test(a))return toast('El PIN debe tener 4 a 6 dígitos');
+    if(a!==b)return toast('Los PIN no coinciden');
+    ls.s(K_PIN,await sha(a));ls.s(K_PLEN,String(a.length));m.remove();render();toast('PIN guardado');
+  };
+}
+let locked=false,hiddenAt=0;
+function lock(cb){
+  if(locked||!ls.g(K_PIN))return;locked=true;
+  const len=+ls.g(K_PLEN)||4,d=document.createElement('div');d.className='lock';
+  d.innerHTML=`<div style="font-size:46px">🔒</div><h2 style="margin:0">CRz SANANT</h2><div>Ingresá tu PIN</div><input id="lp" type="password" inputmode="numeric" maxlength="${len}" autocomplete="off"><div id="lm" style="min-height:20px"></div><button class="btn" id="lf" style="background:transparent;color:#fff;border-color:#fff">Olvidé mi PIN</button>`;
+  document.body.appendChild(d);const i=d.querySelector('#lp');setTimeout(()=>i.focus(),150);
+  let fails=0,block=0;
+  i.oninput=async()=>{
+    if(i.value.length<len)return;
+    if(Date.now()<block){i.value='';return}
+    if(await sha(i.value)===ls.g(K_PIN)){d.remove();locked=false;cb&&cb()}
+    else{fails++;i.value='';d.querySelector('#lm').textContent=fails>=5?'Demasiados intentos. Esperá 30 segundos.':'PIN incorrecto';if(fails>=5){block=Date.now()+30000;fails=0}}
+  };
+  d.querySelector('#lf').onclick=()=>{
+    if(!confirm('Se borrarán los datos de este teléfono y volverán los de la planilla original. Podés recuperar tu información desde tu copia de Drive o archivo. ¿Continuar?'))return;
+    try{localStorage.removeItem(KEY)}catch(e){}ls.s(K_PIN,'');ls.s(K_PLEN,'');location.reload();
+  };
+}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Date.now();else if(ls.g(K_PIN)&&hiddenAt&&Date.now()-hiddenAt>120000)lock()});
+
 const TABS=[['hoy','📅','Hoy'],['corr','👥','Corredores'],['caja','💰','Caja'],['hist','🕘','Historial'],['aj','⚙️','Ajustes']];
 function render(){
   $('#sub').textContent=DIAS[new Date().getDay()]+' '+fmt(today());
   $('#app').innerHTML={hoy:vHoy,corr:vCorr,caja:vCaja,hist:vHist,aj:vAj}[view]();
   $('#tabs').innerHTML=TABS.map(t=>`<button class="${t[0]===view?'on':''}" onclick="view='${t[0]}';render();scrollTo(0,0)"><span>${t[1]}</span>${t[2]}</button>`).join('');
 }
-load();render();setTimeout(askBackup,700);
+load();render();if(ls.g(K_PIN))lock(()=>setTimeout(askBackup,400));else setTimeout(askBackup,700);
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
