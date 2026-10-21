@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>CRz SANANT</title>
+<style>
+:root{--bg:#f1f5f4;--card:#fff;--tx:#0f1f1d;--mu:#64807b;--pr:#0f766e;--pr2:#14b8a6;--ok:#16a34a;--okb:#dcfce7;--er:#dc2626;--erb:#fee2e2;--wa:#d97706;--wab:#fef3c7;--bd:#e2eceb;--sh:0 2px 10px rgba(15,60,55,.08)}
+@media(prefers-color-scheme:dark){:root{--bg:#0b1514;--card:#13211f;--tx:#e7f2f0;--mu:#8fb0aa;--pr:#2dd4bf;--pr2:#0f766e;--okb:#12351f;--erb:#3b1616;--wab:#3a2c0c;--bd:#1f3330;--sh:none}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+header{background:linear-gradient(135deg,#0f766e,#14b8a6);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 18px 22px;border-radius:0 0 26px 26px}
+header h1{margin:0;font-size:20px;letter-spacing:.3px}header small{opacity:.85}
+main{padding:0 14px;margin-top:-14px;max-width:640px;margin-inline:auto}
+.card{background:var(--card);border-radius:18px;padding:14px;margin-bottom:12px;box-shadow:var(--sh);border:1px solid var(--bd)}
+.nav{display:flex;align-items:center;gap:8px}
+.nav button{width:42px;height:42px;border-radius:12px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-size:20px}
+.nav input{flex:1;text-align:center;font-size:18px;font-weight:700}
+input,select{width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit}
+.dia{text-align:center;color:var(--mu);margin-top:6px;text-transform:capitalize}
+.kpi{display:flex;gap:10px}.kpi div{flex:1}.kpi small{color:var(--mu);display:block}.kpi b{font-size:22px}
+.big{width:100%;padding:16px;border:0;border-radius:16px;background:linear-gradient(135deg,var(--pr2),var(--pr));color:#fff;font-size:17px;font-weight:700;box-shadow:0 6px 16px rgba(15,118,110,.35)}
+body.dark-fix .big{color:#04201c}
+@media(prefers-color-scheme:dark){.big{color:#04201c}}
+.big:disabled{opacity:.45;box-shadow:none}
+.row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--bd)}.row:last-child{border:0}
+.row .n{flex:1;min-width:0}.row .n b{display:block}.row .n small{color:var(--mu)}
+.chip{font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px}
+.c-ok{background:var(--okb);color:var(--ok)}.c-no{background:var(--erb);color:var(--er)}.c-pe{background:var(--wab);color:var(--wa)}
+.btn{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:10px;padding:8px 11px;font-weight:600;font-size:13px}
+.btn.rev{color:var(--er);border-color:var(--er)}.btn.cob{color:var(--ok);border-color:var(--ok)}
+.sun{background:var(--wab);color:var(--wa);padding:10px 12px;border-radius:12px;margin-bottom:10px;font-weight:600}
+details summary{font-weight:700;cursor:pointer;padding:2px 0}
+.bar{height:8px;background:var(--bd);border-radius:9px;overflow:hidden;margin:7px 0 4px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--pr2),var(--pr))}
+.sp{display:flex;justify-content:space-between;color:var(--mu);font-size:13px}
+h3{margin:4px 0 10px;font-size:16px}
+.tabs{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--card);border-top:1px solid var(--bd);padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:5}
+.tabs button{flex:1;border:0;background:none;color:var(--mu);font:inherit;font-size:12px;padding:6px 0;border-radius:12px}
+.tabs button span{display:block;font-size:20px}.tabs button.on{color:var(--pr);font-weight:700}
+#toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#0f1f1d;color:#fff;padding:10px 16px;border-radius:12px;opacity:0;transition:.25s;pointer-events:none;z-index:9;max-width:90%;text-align:center}
+#toast.on{opacity:1}
+.hid{display:none}.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mt{margin-top:10px}
+</style>
+</head>
+<body>
+<header><h1>CRz SANANT</h1><small id="sub"></small></header>
+<main id="app"></main>
+<nav class="tabs" id="tabs"></nav>
+<div id="toast"></div>
+<script>
+const SEED={"c":[{"n":"Corredor 100","d":33733500,"q":42000,"a":true,"p":31843500,"g":["2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-26","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10"]},{"n":"Corredor 29","d":23569000,"q":28000,"a":true,"p":22309000,"g":["2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 106","d":21600000,"q":28000,"a":true,"p":20340000,"g":["2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 24","d":42030000,"q":42000,"a":true,"p":40140000,"g":["2026-10-08","2026-10-09","2026-10-10","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 47","d":55710000,"q":42000,"a":true,"p":53820000,"g":["2026-10-09","2026-10-10","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 27","d":12285000,"q":14000,"a":true,"p":11655000,"g":["2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 22","d":22500000,"q":28000,"a":true,"p":21240000,"g":["2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 17","d":38780000,"q":56000,"a":true,"p":36260000,"g":["2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor --","d":10845000,"q":0,"a":false,"p":10845000,"g":[]},{"n":"Corredor 24,3","d":14400000,"q":14000,"a":true,"p":13770000,"g":["2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 81","d":34020000,"q":42000,"a":true,"p":32130000,"g":["2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 24,2","d":13992000,"q":28000,"a":true,"p":12732000,"g":["2026-10-21"]},{"n":"Corredor 39","d":20790000,"q":28000,"a":true,"p":19530000,"g":["2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]},{"n":"Corredor 05,2","d":6300000,"q":28000,"a":true,"p":5040000,"g":["2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-05","2026-09-07","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-12","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-19","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-26","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-19","2026-10-20","2026-10-21"]}],"np":[[0,"2026-10-21",42000]]};
+const KEY='crz_sanant_v1';
+const $=s=>document.querySelector(s);
+const Gs=n=>'Gs. '+Math.round(n).toLocaleString('de-DE');
+const pad=n=>String(n).padStart(2,'0');
+const iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const fmt=s=>s.slice(8)+'/'+s.slice(5,7)+'/'+s.slice(0,4);
+const dt=s=>new Date(+s.slice(0,4),+s.slice(5,7)-1,+s.slice(8,10));
+const addD=(s,n)=>{const d=dt(s);d.setDate(d.getDate()+n);return iso(d)};
+const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const uid=()=>Math.random().toString(36).slice(2,9);
+let S,view='hoy',fecha=iso(new Date());
+const today=()=>iso(new Date());
+
+function seed(){
+  const corr=SEED.c.map((c,i)=>({id:'c'+i,nombre:c.n,deuda:c.d,cuota:c.q,activo:c.a,previo:c.p}));
+  const pagos=[];
+  SEED.c.forEach((c,i)=>c.g.forEach(g=>{const f=Array.isArray(g)?g[0]:g,m=Array.isArray(g)?g[1]:c.q;pagos.push({id:uid(),c:'c'+i,f,m})}));
+  return {corr,pagos,nopago:SEED.np.map(x=>({c:'c'+x[0],f:x[1],m:x[2]}))};
+}
+function load(){try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}if(!S||!S.corr){S=seed();save()}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('No se pudo guardar')}}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2200)}
+
+const pagado=c=>c.previo+S.pagos.filter(p=>p.c===c.id).reduce((a,p)=>a+p.m,0);
+const saldo=c=>c.deuda-pagado(c);
+const pagosDe=(c,f)=>S.pagos.filter(p=>p.c===c.id&&p.f===f);
+const npDe=(c,f)=>S.nopago.find(p=>p.c===c.id&&p.f===f);
+const totalDia=f=>S.pagos.filter(p=>p.f===f).reduce((a,p)=>a+p.m,0);
+const activos=()=>S.corr.filter(c=>c.activo&&c.cuota>0&&saldo(c)>0);
+
+function generar(f){
+  if(dt(f).getDay()===0)return toast('Los domingos se carga solo manual');
+  let n=0;
+  activos().forEach(c=>{if(!pagosDe(c,f).length&&!npDe(c,f)){S.pagos.push({id:uid(),c:c.id,f,m:Math.min(c.cuota,saldo(c))});n++}});
+  save();render();toast(n?`${n} cobros generados`:'Ya estaba todo generado');
+}
+function revertir(cid,f){
+  const c=S.corr.find(x=>x.id===cid),ps=pagosDe(c,f);if(!ps.length)return;
+  const m=ps.reduce((a,p)=>a+p.m,0);
+  if(!confirm(`¿Revertir el cobro de ${c.nombre} (${Gs(m)}) del ${fmt(f)}?\nSe marcará como NO PAGÓ.`))return;
+  S.pagos=S.pagos.filter(p=>!(p.c===cid&&p.f===f));S.nopago.push({c:cid,f,m});
+  save();render();toast('Cobro revertido · marcado como no pagó');
+}
+function cobrar(cid,f,m){
+  const c=S.corr.find(x=>x.id===cid);m=m||Math.min(c.cuota,saldo(c));
+  if(!(m>0))return toast('Monto inválido');
+  S.nopago=S.nopago.filter(p=>!(p.c===cid&&p.f===f));
+  S.pagos.push({id:uid(),c:cid,f,m,man:1});save();render();toast('Cobro registrado');
+}
+
+function mask(e){let v=e.target.value.replace(/\D/g,'').slice(0,8);if(v.length>4)v=v.slice(0,2)+'/'+v.slice(2,4)+'/'+v.slice(4);else if(v.length>2)v=v.slice(0,2)+'/'+v.slice(2);e.target.value=v}
+function setFecha(v){const m=v.match(/^(\d\d)\/(\d\d)\/(\d{4})$/);if(!m)return toast('Fecha: dd/mm/aaaa');const s=`${m[3]}-${m[2]}-${m[1]}`;if(isNaN(dt(s))||iso(dt(s))!==s)return toast('Fecha inválida');fecha=s;render()}
+
+function vHoy(){
+  const dom=dt(fecha).getDay()===0,esHoy=fecha===today();
+  const lista=S.corr.filter(c=>dom?(pagosDe(c,fecha).length||npDe(c,fecha)):(c.activo||pagosDe(c,fecha).length));
+  const cobr=lista.filter(c=>pagosDe(c,fecha).length).length;
+  let h=`<div class="card"><div class="nav"><button onclick="fecha=addD(fecha,-1);render()">‹</button>
+  <input id="fi" inputmode="numeric" autocomplete="off" placeholder="dd/mm/aaaa" value="${fmt(fecha)}" oninput="mask(event)" onchange="setFecha(this.value)" onfocus="this.select()">
+  <button onclick="fecha=addD(fecha,1);render()">›</button></div>
+  <div class="dia">${DIAS[dt(fecha).getDay()]}${esHoy?' · hoy':''}</div></div>
+  <div class="card"><div class="kpi"><div><small>Cobrado del día</small><b>${Gs(totalDia(fecha))}</b></div><div><small>Cobrados</small><b>${cobr}/${lista.length}</b></div></div>
+  <div class="mt">${dom?`<div class="sun">☀️ Domingo: solo carga manual, si hubiera cobros.</div>`:`<button class="big" onclick="generar(fecha)">⚡ Generar cobros ${esHoy?'de hoy':'del día'}</button>`}</div></div>
+  <div class="card"><h3>Cobros del día</h3>`;
+  if(!lista.length)h+=`<div class="sp">${dom?'Sin cobros cargados este domingo.':'Nada por mostrar.'}</div>`;
+  lista.forEach(c=>{const ps=pagosDe(c,fecha),np=npDe(c,fecha),m=ps.reduce((a,p)=>a+p.m,0);
+    h+=`<div class="row"><div class="n"><b>${c.nombre}</b><small>${ps.length?Gs(m):'Cuota '+Gs(c.cuota)}</small></div>
+    ${ps.length?`<span class="chip c-ok">Cobrado</span><button class="btn rev" onclick="revertir('${c.id}','${fecha}')">Revertir</button>`
+    :np?`<span class="chip c-no">No pagó</span><button class="btn cob" onclick="cobrar('${c.id}','${fecha}',${np.m})">Cobrar</button>`
+    :`<span class="chip c-pe">Pendiente</span><button class="btn cob" onclick="cobrar('${c.id}','${fecha}')">Cobrar</button>`}</div>`});
+  h+=`</div><div class="card"><details ${dom?'open':''}><summary>＋ Cobro manual</summary><div class="g2 mt">
+  <select id="mc" onchange="$('#mm').value=S.corr.find(c=>c.id===this.value).cuota||''">${S.corr.filter(c=>saldo(c)>0).map(c=>`<option value="${c.id}">${c.nombre}</option>`).join('')}</select>
+  <input id="mm" inputmode="numeric" placeholder="Monto Gs." value="${(S.corr.find(c=>saldo(c)>0)||{}).cuota||''}"></div>
+  <button class="big mt" onclick="const m=parseInt($('#mm').value.replace(/\\D/g,''));cobrar($('#mc').value,fecha,m)">Agregar cobro</button></details></div>`;
+  return h;
+}
+function vCorr(){
+  const tot=S.corr.reduce((a,c)=>a+saldo(c),0);
+  let h=`<div class="card"><div class="kpi"><div><small>Deuda pendiente total</small><b>${Gs(tot)}</b></div><div><small>Activos</small><b>${activos().length}</b></div></div></div>`;
+  S.corr.forEach(c=>{const s=saldo(c),pc=Math.min(100,pagado(c)/c.deuda*100),q=c.cuota?Math.ceil(s/c.cuota):0;
+    h+=`<div class="card"><div class="row" style="border:0;padding:0"><div class="n"><b>${c.nombre}</b><small>Cuota ${c.cuota?Gs(c.cuota):'—'}</small></div>
+    <span class="chip ${s<=0?'c-ok':'c-pe'}">${s<=0?'Saldado':q+' cuotas'}</span></div>
+    <div class="bar"><i style="width:${pc}%"></i></div><div class="sp"><span>Pagado ${Gs(pagado(c))}</span><span>Saldo ${Gs(Math.max(s,0))}</span></div></div>`});
+  return h;
+}
+function vHist(){
+  let h=`<div class="card"><h3>Últimos 31 días</h3>`;
+  for(let i=0;i<31;i++){const f=addD(today(),-i),t=totalDia(f),d=dt(f).getDay(),np=S.nopago.filter(p=>p.f===f).length;
+    h+=`<div class="row" onclick="fecha='${f}';view='hoy';render()"><div class="n"><b>${fmt(f)}</b><small>${DIAS[d]}${np?' · '+np+' no pagó':''}</small></div><b>${t?Gs(t):'—'}</b></div>`}
+  h+=`</div><div class="card"><h3>No pagó (${S.nopago.length})</h3>`;
+  const l=[...S.nopago].sort((a,b)=>b.f.localeCompare(a.f)).slice(0,40);
+  if(!l.length)h+=`<div class="sp">Sin registros.</div>`;
+  l.forEach(p=>{const c=S.corr.find(x=>x.id===p.c);h+=`<div class="row"><div class="n"><b>${c.nombre}</b><small>${fmt(p.f)}</small></div><span>${Gs(p.m)}</span></div>`});
+  return h+`</div>`;
+}
+function vAj(){return `<div class="card"><h3>Respaldo</h3><div class="g2"><button class="btn" onclick="exportar()">⬇ Exportar</button><button class="btn" onclick="$('#imp').click()">⬆ Importar</button></div>
+  <input type="file" id="imp" accept=".json" class="hid" onchange="importar(this.files[0])"></div>
+  <div class="card"><h3>Datos originales</h3><div class="sp">Restaura los datos de la planilla CRz_SANANT_2_0.xlsx. Se pierden los cambios hechos en la app.</div>
+  <button class="btn rev mt" onclick="if(confirm('¿Restaurar los datos originales de la planilla?')){S=seed();save();render();toast('Datos restaurados')}">Restaurar planilla</button></div>`}
+function exportar(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='crz-sanant-'+today()+'.json';a.click()}
+function importar(f){if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.corr||!d.pagos)throw 0;S=d;save();render();toast('Respaldo importado')}catch(e){toast('Archivo no válido')}};r.readAsText(f)}
+
+const TABS=[['hoy','📅','Hoy'],['corr','👥','Corredores'],['hist','🕘','Historial'],['aj','⚙️','Ajustes']];
+function render(){
+  $('#sub').textContent=DIAS[new Date().getDay()]+' '+fmt(today());
+  $('#app').innerHTML={hoy:vHoy,corr:vCorr,hist:vHist,aj:vAj}[view]();
+  $('#tabs').innerHTML=TABS.map(t=>`<button class="${t[0]===view?'on':''}" onclick="view='${t[0]}';render();scrollTo(0,0)"><span>${t[1]}</span>${t[2]}</button>`).join('');
+}
+load();render();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
